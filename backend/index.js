@@ -9,9 +9,13 @@ const app = express();
 // Use DATABASE_URL for Render (priority), fall back to individual env vars for local dev
 let poolConfig;
 if (process.env.DATABASE_URL) {
+  // Ensure sslmode=require is in the connection string
+  const dbUrl = process.env.DATABASE_URL.includes('sslmode') 
+    ? process.env.DATABASE_URL 
+    : `${process.env.DATABASE_URL}?sslmode=require`;
+  
   poolConfig = {
-    connectionString: process.env.DATABASE_URL,
-    ssl: true, // Render requires SSL
+    connectionString: dbUrl,
   };
 } else {
   poolConfig = {
