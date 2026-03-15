@@ -1,7 +1,7 @@
 databases:
   - name: todo-db
     databaseName: todo_app
-    user: postgres
+    user: todoapp
     plan: free
 
 services:
