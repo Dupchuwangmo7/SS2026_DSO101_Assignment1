@@ -11,10 +11,8 @@ services:
     dockerfilePath: ./backend/Dockerfile
     autoDeploy: true
     envVars:
-      - key: postgresql://todo_db_0xd1_user:Mauspz5VkyVWesRguhCFVNXXCowFAsoR@dpg-d6rell9j16oc73f6b2dg-a/todo_db_0xd1
-        fromDatabase:
-          name: todo-db
-          property: connectionString
+      - key: DATABASE_URL
+        value: postgresql://todo_db_0xd1_user:Mauspz5VkyVWesRguhCFVNXXCowFAsoR@dpg-d6rell9j16oc73f6b2dg-a/todo_db_0xd1
       - key: PORT
         value: "5001"
 
@@ -23,6 +21,9 @@ services:
     env: docker
     dockerfilePath: ./frontend/Dockerfile
     autoDeploy: true
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://todo-backend.onrender.com
     envVars:
       - key: REACT_APP_API_URL
         value: https://todo-backend.onrender.com
