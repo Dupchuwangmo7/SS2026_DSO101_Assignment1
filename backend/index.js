@@ -9,15 +9,15 @@ const app = express();
 // Use DATABASE_URL for Render (priority), fall back to individual env vars for local dev
 let poolConfig;
 if (process.env.DATABASE_URL) {
-  // Ensure sslmode=require is in the connection string
-  const dbUrl = process.env.DATABASE_URL.includes('sslmode') 
-    ? process.env.DATABASE_URL 
-    : `${process.env.DATABASE_URL}?sslmode=require`;
-  
+  // For Render PostgreSQL: use connectionString with SSL
   poolConfig = {
-    connectionString: dbUrl,
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   };
 } else {
+  // Local development
   poolConfig = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'postgres',
