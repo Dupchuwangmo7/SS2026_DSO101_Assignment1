@@ -10,9 +10,11 @@ services:
     env: docker
     dockerfilePath: ./backend/Dockerfile
     autoDeploy: true
-    databases:
-      - name: todo-db
     envVars:
+      - key: postgresql://todo_db_0xd1_user:Mauspz5VkyVWesRguhCFVNXXCowFAsoR@dpg-d6rell9j16oc73f6b2dg-a/todo_db_0xd1
+        fromDatabase:
+          name: todo-db
+          property: connectionString
       - key: PORT
         value: "5001"
 
