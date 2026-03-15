@@ -1,4 +1,7 @@
-require('dotenv').config();
+// Only load .env in development (not production)
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const express = require('express');
 const cors = require('cors');
@@ -6,18 +9,31 @@ const { Pool } = require('pg');
 
 const app = express();
 
+// CRITICAL: Check for DATABASE_URL
+if (!process.env.DATABASE_URL && process.env.NODE_ENV === 'production') {
+  console.error('❌ FATAL: DATABASE_URL is not set in production');
+  console.error('Please attach a PostgreSQL database to your Render service');
+  process.exit(1);
+}
+
 // Use DATABASE_URL for Render (priority), fall back to individual env vars for local dev
 let poolConfig;
+console.log('[DB] NODE_ENV:', process.env.NODE_ENV);
+console.log('[DB] DATABASE_URL present:', !!process.env.DATABASE_URL);
+
 if (process.env.DATABASE_URL) {
+  console.log('[DB] Connecting via DATABASE_URL (production mode)');
   // For Render PostgreSQL: use connectionString with SSL
   poolConfig = {
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    ssl: { rejectUnauthorized: false },
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
   };
 } else {
-  // Local development
+  console.log('[DB] Using local development configuration');
+  // Local development only
   poolConfig = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'postgres',
@@ -153,17 +169,17 @@ app.delete('/tasks/:id', async (req, res) => {
 const PORT = Number(process.env.PORT);
 
 if (!PORT) {
-  console.error('PORT is required in .env');
+  console.error('❌ PORT is required in environment variables');
   process.exit(1);
 }
 
 initializeDatabase()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`✅ Server running on port ${PORT}`);
     });
   })
   .catch((error) => {
-    console.error('Failed to initialize database:', error);
+    console.error('❌ Failed to initialize database:', error);
     process.exit(1);
   });
