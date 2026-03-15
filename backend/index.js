@@ -1,6 +1,14 @@
-// Only load .env in development (not production)
-if (process.env.NODE_ENV !== 'production') {
+// Only load .env in development - NOT in Docker/production
+// In production, environment variables are provided by Render directly
+const fs = require('fs');
+const path = require('path');
+const envPath = path.join(__dirname, '.env');
+
+if (fs.existsSync(envPath)) {
+  console.log('[INIT] Loading .env from filesystem (development mode)');
   require('dotenv').config();
+} else {
+  console.log('[INIT] .env not found - using environment variables directly (production mode)');
 }
 
 const express = require('express');
@@ -9,21 +17,15 @@ const { Pool } = require('pg');
 
 const app = express();
 
-// CRITICAL: Check for DATABASE_URL
-if (!process.env.DATABASE_URL && process.env.NODE_ENV === 'production') {
-  console.error('❌ FATAL: DATABASE_URL is not set in production');
-  console.error('Please attach a PostgreSQL database to your Render service');
-  process.exit(1);
-}
-
-// Use DATABASE_URL for Render (priority), fall back to individual env vars for local dev
-let poolConfig;
-console.log('[DB] NODE_ENV:', process.env.NODE_ENV);
+// ALWAYS print current state
+console.log('[DB] NODE_ENV:', process.env.NODE_ENV || 'undefined');
 console.log('[DB] DATABASE_URL present:', !!process.env.DATABASE_URL);
 
+// Determine which database configuration to use
+let poolConfig;
+
 if (process.env.DATABASE_URL) {
-  console.log('[DB] Connecting via DATABASE_URL (production mode)');
-  // For Render PostgreSQL: use connectionString with SSL
+  console.log('[DB] ✅ Using DATABASE_URL from environment (production configuration)');
   poolConfig = {
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
@@ -32,8 +34,16 @@ if (process.env.DATABASE_URL) {
     connectionTimeoutMillis: 2000,
   };
 } else {
-  console.log('[DB] Using local development configuration');
-  // Local development only
+  // SAFETY: In Docker, we MUST have DATABASE_URL
+  if (process.env.RENDER === 'true' || process.argv.some(arg => arg.includes('/app/'))) {
+    console.error('[DB] ❌ FATAL: DATABASE_URL not set in Docker environment!');
+    console.error('[DB] Render requires DATABASE_URL environment variable');
+    console.error('[DB] Make sure your PostgreSQL database is attached to this service');
+    process.exit(1);
+  }
+  
+  console.log('[DB] ⚠️  DATABASE_URL not found - attempting local database configuration');
+  // Local development ONLY
   poolConfig = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'postgres',
@@ -41,9 +51,15 @@ if (process.env.DATABASE_URL) {
     database: process.env.DB_NAME || 'todo_app',
     port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
   };
+  console.log('[DB] Local config:', { host: poolConfig.host, port: poolConfig.port, database: poolConfig.database });
 }
 
 const pool = new Pool(poolConfig);
+
+// Handle pool connection errors
+pool.on('error', (err) => {
+  console.error('[DB POOL ERROR]', err);
+});
 
 app.use(cors());
 app.use(express.json());
@@ -57,15 +73,36 @@ app.get('/', (_req, res) => {
 });
 
 async function initializeDatabase() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS tasks (
-      id SERIAL PRIMARY KEY,
-      title TEXT NOT NULL,
-      completed BOOLEAN NOT NULL DEFAULT FALSE
-    );
-  `);
+  try {
+    console.log('[DB] Testing database connection...');
+    // Test the connection first
+    const result = await pool.query('SELECT NOW();');
+    console.log('[DB] ✅ Database connection successful:', result.rows[0]);
+  } catch (error) {
+    console.error('[DB] ❌ Failed to connect to database:');
+    console.error('[DB] Error:', error.message);
+    console.error('[DB] Code:', error.code);
+    console.error('[DB] Address:', error.address);
+    console.error('[DB] Port:', error.port);
+    throw error;
+  }
 
-  await pool.query('ALTER TABLE tasks DROP COLUMN IF EXISTS created_at;');
+  try {
+    console.log('[DB] Creating tables...');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS tasks (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        completed BOOLEAN NOT NULL DEFAULT FALSE
+      );
+    `);
+    console.log('[DB] ✅ Tables ready');
+
+    await pool.query('ALTER TABLE tasks DROP COLUMN IF EXISTS created_at;');
+  } catch (error) {
+    console.error('[DB] ❌ Failed to initialize tables:', error.message);
+    throw error;
+  }
 }
 
 app.get('/tasks', async (_req, res) => {
