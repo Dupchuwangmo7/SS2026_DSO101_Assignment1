@@ -7,16 +7,23 @@ const { Pool } = require('pg');
 const app = express();
 
 // Use DATABASE_URL for Render (priority), fall back to individual env vars for local dev
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || undefined,
-  ...(process.env.DATABASE_URL ? {} : {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+let poolConfig;
+if (process.env.DATABASE_URL) {
+  poolConfig = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }, // Render requires SSL
+  };
+} else {
+  poolConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
+    database: process.env.DB_NAME || 'todo_app',
     port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
-  }),
-});
+  };
+}
+
+const pool = new Pool(poolConfig);
 
 app.use(cors());
 app.use(express.json());
