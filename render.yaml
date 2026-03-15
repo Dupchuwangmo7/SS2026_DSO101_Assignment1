@@ -24,6 +24,4 @@ services:
     envVars:
       - key: REACT_APP_API_URL
         value: https://todo-backend.onrender.com
-    envVars:
-      - key: REACT_APP_API_URL
-        value: https://todo-backend.onrender.com
+    
