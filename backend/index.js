@@ -11,7 +11,7 @@ let poolConfig;
 if (process.env.DATABASE_URL) {
   poolConfig = {
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }, // Render requires SSL
+    ssl: true, // Render requires SSL
   };
 } else {
   poolConfig = {
