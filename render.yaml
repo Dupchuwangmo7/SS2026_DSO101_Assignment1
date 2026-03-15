@@ -1,3 +1,9 @@
+databases:
+  - name: todo-db
+    databaseName: todo_app
+    user: postgres
+    plan: free
+
 services:
   - type: web
     name: todo-backend
@@ -6,13 +12,21 @@ services:
     autoDeploy: true
     envVars:
       - key: DB_HOST
-        sync: false
+        fromDatabase:
+          name: todo-db
+          property: host
       - key: DB_USER
-        sync: false
+        fromDatabase:
+          name: todo-db
+          property: user
       - key: DB_PASSWORD
-        sync: false
+        fromDatabase:
+          name: todo-db
+          property: password
       - key: DB_NAME
-        sync: false
+        fromDatabase:
+          name: todo-db
+          property: database
       - key: PORT
         value: "5001"
 
