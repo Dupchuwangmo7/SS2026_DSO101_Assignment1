@@ -7,8 +7,6 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
-        value: postgresql://todo_db_0xd1_user:Mauspz5VkyVWesRguhCFVNXXCowFAsoR@dpg-d6rell9j16oc73f6b2dg-a/todo_db_0xd1
       - key: PORT
         value: "5001"
     
