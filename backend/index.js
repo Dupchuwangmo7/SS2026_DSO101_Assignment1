@@ -34,24 +34,10 @@ if (process.env.DATABASE_URL) {
     connectionTimeoutMillis: 2000,
   };
 } else {
-  // SAFETY: In Docker, we MUST have DATABASE_URL
-  if (process.env.RENDER === 'true' || process.argv.some(arg => arg.includes('/app/'))) {
-    console.error('[DB] ❌ FATAL: DATABASE_URL not set in Docker environment!');
-    console.error('[DB] Render requires DATABASE_URL environment variable');
-    console.error('[DB] Make sure your PostgreSQL database is attached to this service');
-    process.exit(1);
-  }
-  
-  console.log('[DB] ⚠️  DATABASE_URL not found - attempting local database configuration');
-  // Local development ONLY
-  poolConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    database: process.env.DB_NAME || 'todo_app',
-    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
-  };
-  console.log('[DB] Local config:', { host: poolConfig.host, port: poolConfig.port, database: poolConfig.database });
+  console.error('[DB] ❌ FATAL: DATABASE_URL not set!');
+  console.error('[DB] Render requires DATABASE_URL environment variable');
+  console.error('[DB] Make sure your PostgreSQL database is attached to this service');
+  process.exit(1);
 }
 
 const pool = new Pool(poolConfig);
