@@ -1,14 +1,9 @@
-// Only load .env in development - NOT in Docker/production
-// In production, environment variables are provided by Render directly
-const fs = require('fs');
-const path = require('path');
-const envPath = path.join(__dirname, '.env');
-
-if (fs.existsSync(envPath)) {
-  console.log('[INIT] Loading .env from filesystem (development mode)');
+// Load .env only in development (not in production/Docker)
+if (process.env.NODE_ENV !== 'production') {
+  console.log('[INIT] Loading .env (development mode)');
   require('dotenv').config();
 } else {
-  console.log('[INIT] .env not found - using environment variables directly (production mode)');
+  console.log('[INIT] Skipping .env (production mode) - using environment variables directly');
 }
 
 const express = require('express');
@@ -61,7 +56,6 @@ app.get('/', (_req, res) => {
 async function initializeDatabase() {
   try {
     console.log('[DB] Testing database connection...');
-    // Test the connection first
     const result = await pool.query('SELECT NOW();');
     console.log('[DB] ✅ Database connection successful:', result.rows[0]);
   } catch (error) {
@@ -94,7 +88,6 @@ async function initializeDatabase() {
 app.get('/tasks', async (_req, res) => {
   try {
     const { rows } = await pool.query('SELECT id, title, completed FROM tasks ORDER BY id DESC;');
-
     res.json(rows);
   } catch (error) {
     console.error('Failed to fetch tasks:', error);
@@ -114,7 +107,6 @@ app.post('/tasks', async (req, res) => {
       'INSERT INTO tasks (title, completed) VALUES ($1, $2) RETURNING id, title, completed;',
       [title, false]
     );
-
     return res.status(201).json(rows[0]);
   } catch (error) {
     console.error('Failed to create task:', error);
@@ -133,9 +125,7 @@ app.put('/tasks/:id', async (req, res) => {
   const hasCompleted = typeof req.body?.completed === 'boolean';
 
   if (!hasTitle && !hasCompleted) {
-    return res
-      .status(400)
-      .json({ error: 'Provide title and/or completed to update' });
+    return res.status(400).json({ error: 'Provide title and/or completed to update' });
   }
 
   const title = hasTitle ? req.body.title.trim() : null;
