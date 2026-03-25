@@ -9,6 +9,8 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     
     steps:
       - name: Checkout code
@@ -27,7 +29,7 @@ jobs:
         id: backend-meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/be-todo
+          images: ${{ env.DOCKERHUB_USERNAME }}/be-todo
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -47,7 +49,7 @@ jobs:
         id: frontend-meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/fe-todo
+          images: ${{ env.DOCKERHUB_USERNAME }}/fe-todo
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
