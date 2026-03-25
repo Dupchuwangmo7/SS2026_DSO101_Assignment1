@@ -27,7 +27,8 @@ jobs:
         id: backend-meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/be-todo
+          images: |
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/be-todo
 
       - name: Build and push backend image
         uses: docker/build-push-action@v5
@@ -41,7 +42,8 @@ jobs:
         id: frontend-meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/fe-todo
+          images: |
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/fe-todo
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
