@@ -23,37 +23,25 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - name: Extract metadata for backend
-      #   id: backend-meta
-      #   uses: docker/metadata-action@v5
-      #   with:
-      #     images: ${{ secrets.DOCKERHUB_USERNAME }}/be-todo
-      #     tags: |
-      #       type=ref,event=branch
-      #       type=semver,pattern={{version}}
-      #       type=semver,pattern={{major}}.{{minor}}
-      #       type=sha
-      #       type=raw,value=latest
+      - name: Extract metadata for backend
+        id: backend-meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/be-todo
 
-      # - name: Build and push backend image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: ./backend
-      #     push: true
-      #     tags: ${{ steps.backend-meta.outputs.tags }}
-      #     labels: ${{ steps.backend-meta.outputs.labels }}
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ steps.backend-meta.outputs.tags }}
+          labels: ${{ steps.backend-meta.outputs.labels }}
 
       - name: Extract metadata for frontend
         id: frontend-meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/fe-todo
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
-            type=raw,value=latest
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
