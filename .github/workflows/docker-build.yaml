@@ -72,13 +72,13 @@ jobs:
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }} \
             -H "Content-Type: application/json"
-        if: ${{ secrets.RENDER_DEPLOY_HOOK_BACKEND != '' }}
+        if: secrets.RENDER_DEPLOY_HOOK_BACKEND != ''
 
       - name: Deploy frontend to Render
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }} \
             -H "Content-Type: application/json"
-        if: ${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND != '' }}
+        if: secrets.RENDER_DEPLOY_HOOK_FRONTEND != ''
 
       - name: Wait for deployment
         run: sleep 30
