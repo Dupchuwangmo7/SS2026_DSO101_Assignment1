@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
-const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5001'
+const API_URL = import.meta.env.REACT_APP_API_URL 
 
 function App() {
   const [tasks, setTasks] = useState([])
