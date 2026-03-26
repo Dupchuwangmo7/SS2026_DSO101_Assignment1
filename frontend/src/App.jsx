@@ -3,6 +3,8 @@ import './App.css'
 
 const API_URL = import.meta.env.REACT_APP_API_URL 
 
+console.log('API_URL:', API_URL)
+
 function App() {
   const [tasks, setTasks] = useState([])
   const [newTaskTitle, setNewTaskTitle] = useState('')

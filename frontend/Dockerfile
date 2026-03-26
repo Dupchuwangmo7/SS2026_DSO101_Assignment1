@@ -2,6 +2,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+ARG REACT_APP_API_URL
+
 COPY package*.json ./
 RUN npm ci
 
