@@ -9,4 +9,11 @@ services:
         value: production
       - key: PORT
         value: "5001"
-    
+      - key: DATABASE_URL
+        sync: false
+  - type: web
+    name: fe-todo
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    autoDeploy: true
+    envVars: []
