@@ -11,12 +11,11 @@ services:
         value: "5001"
       - key: DATABASE_URL
         sync: false
-
   - type: web
     name: fe-todo
     env: docker
     dockerfilePath: ./frontend/Dockerfile
     autoDeploy: true
-    dockerBuildArgs:
-      - name: REACT_APP_API_URL
-        value: https://be-todo-02230282.onrender.com   
+    envVars:
+      - key: VITE_API_URL
+        value: https://be-todo-02230282.onrender.com

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
-const API_URL = import.meta.env.REACT_APP_API_URL 
+const API_URL = import.meta.env.VITE_API_URL
 
 console.log('API_URL:', API_URL)
 
@@ -21,14 +21,9 @@ function App() {
 
   async function loadTasks() {
     setError('')
-
     try {
       const response = await fetch(`${API_URL}/tasks`)
-
-      if (!response.ok) {
-        throw new Error('Failed to load tasks')
-      }
-
+      if (!response.ok) throw new Error('Failed to load tasks')
       const data = await response.json()
       setTasks(data)
     } catch (loadError) {
@@ -40,28 +35,16 @@ function App() {
 
   async function addTask(event) {
     event.preventDefault()
-
     const title = newTaskTitle.trim()
-
-    if (!title) {
-      return
-    }
-
+    if (!title) return
     setError('')
-
     try {
       const response = await fetch(`${API_URL}/tasks`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title }),
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to add task')
-      }
-
+      if (!response.ok) throw new Error('Failed to add task')
       const createdTask = await response.json()
       setTasks((currentTasks) => [createdTask, ...currentTasks])
       setNewTaskTitle('')
@@ -82,26 +65,15 @@ function App() {
 
   async function saveTask(taskId) {
     const title = editingTitle.trim()
-
-    if (!title) {
-      return
-    }
-
+    if (!title) return
     setError('')
-
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title }),
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to update task')
-      }
-
+      if (!response.ok) throw new Error('Failed to update task')
       const updatedTask = await response.json()
       setTasks((currentTasks) =>
         currentTasks.map((task) => (task.id === taskId ? updatedTask : task))
@@ -114,20 +86,13 @@ function App() {
 
   async function toggleCompleted(task) {
     setError('')
-
     try {
       const response = await fetch(`${API_URL}/tasks/${task.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: !task.completed }),
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to update task status')
-      }
-
+      if (!response.ok) throw new Error('Failed to update task status')
       const updatedTask = await response.json()
       setTasks((currentTasks) =>
         currentTasks.map((item) => (item.id === task.id ? updatedTask : item))
@@ -139,23 +104,15 @@ function App() {
 
   async function deleteTask(taskId) {
     setError('')
-
     try {
       const response = await fetch(`${API_URL}/tasks/${taskId}`, {
         method: 'DELETE',
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete task')
-      }
-
+      if (!response.ok) throw new Error('Failed to delete task')
       setTasks((currentTasks) =>
         currentTasks.filter((task) => task.id !== taskId)
       )
-
-      if (editingTaskId === taskId) {
-        cancelEditing()
-      }
+      if (editingTaskId === taskId) cancelEditing()
     } catch (deleteError) {
       setError(deleteError.message)
     }
@@ -187,7 +144,6 @@ function App() {
           <ul className="task-list">
             {tasks.map((task) => {
               const isEditing = editingTaskId === task.id
-
               return (
                 <li key={task.id} className="task-item">
                   <label className="task-check">
@@ -208,10 +164,7 @@ function App() {
                           event.preventDefault()
                           saveTask(task.id)
                         }
-
-                        if (event.key === 'Escape') {
-                          cancelEditing()
-                        }
+                        if (event.key === 'Escape') cancelEditing()
                       }}
                     />
                   ) : (
@@ -223,21 +176,13 @@ function App() {
                   <div className="task-actions">
                     {isEditing ? (
                       <>
-                        <button type="button" onClick={() => saveTask(task.id)}>
-                          Save
-                        </button>
-                        <button type="button" onClick={cancelEditing}>
-                          Cancel
-                        </button>
+                        <button type="button" onClick={() => saveTask(task.id)}>Save</button>
+                        <button type="button" onClick={cancelEditing}>Cancel</button>
                       </>
                     ) : (
-                      <button type="button" onClick={() => startEditing(task)}>
-                        Edit
-                      </button>
+                      <button type="button" onClick={() => startEditing(task)}>Edit</button>
                     )}
-                    <button type="button" onClick={() => deleteTask(task.id)}>
-                      Delete
-                    </button>
+                    <button type="button" onClick={() => deleteTask(task.id)}>Delete</button>
                   </div>
                 </li>
               )

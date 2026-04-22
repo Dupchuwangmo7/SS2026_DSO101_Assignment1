@@ -2,8 +2,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-ARG REACT_APP_API_URL=https://be-todo-02230282.onrender.com
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ARG VITE_API_URL=https://be-todo-02230282.onrender.com
+ENV VITE_API_URL=$VITE_API_URL
 
 COPY package*.json ./
 RUN npm ci
