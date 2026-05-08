@@ -1,21 +1,36 @@
 services:
+  # Backend Web Service
   - type: web
     name: be-todo
     env: docker
     dockerfilePath: ./backend/Dockerfile
-    autoDeploy: true
+    plan: free
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: DB_HOST
+        sync: false        # Paste Internal Host from Render PostgreSQL dashboard
+      - key: DB_USER
+        sync: false        # Paste Username from Render PostgreSQL dashboard
+      - key: DB_PASSWORD
+        sync: false        # Paste Password from Render PostgreSQL dashboard
+      - key: DB_NAME
+        sync: false        # Paste Database name from Render PostgreSQL dashboard
+      - key: DB_PORT
+        value: 5432
+      - key: DB_SSL
+        value: true
       - key: PORT
-        value: "5001"
-      - key: DATABASE_URL
-        sync: false
+        value: 5001
+
+  # Frontend Web Service
   - type: web
     name: fe-todo
     env: docker
     dockerfilePath: ./frontend/Dockerfile
-    autoDeploy: true
+    plan: free
     envVars:
-      - key: VITE_API_URL
-        value: https://be-todo-02230282.onrender.com
+      - key: REACT_APP_API_URL
+        value: https://be-todo.onrender.com
+
+# NOTE: No database service block here — using Render's managed PostgreSQL.
+# Create the PostgreSQL database manually on Render dashboard first,
+# then copy the credentials into the sync:false fields above when applying the Blueprint.

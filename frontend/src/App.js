@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API_URL = '';
+const API_URL = process.env.REACT_APP_API_URL || '';
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -88,7 +88,7 @@ function App() {
       <div className="noise" />
       <div className="container">
         <header>
-          <div className="logo">✦ TASKR</div>
+          <div className="logo">TASKR</div>
           <p className="subtitle">Get things done, one task at a time.</p>
           <div className="stats">
             <span className="stat pending">{pending} pending</span>

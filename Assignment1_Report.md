@@ -3,8 +3,6 @@
 **Student ID:** 02230282  
 **Module:** DSO101 — Continuous Integration and Continuous Deployment  
 
----
-
 ## Project Overview
 
 A full-stack To-Do List web application built with:
@@ -42,7 +40,6 @@ todo-app/
 └── README.md
 ```
 
----
 
 ## Step 0 — Building the Application Locally
 
@@ -72,15 +69,14 @@ DB_PASSWORD=yourpassword
 DB_NAME=tododb
 DB_PORT=5432
 DB_SSL=false
-PORT=5000
+PORT=5001
 ```
 
 3. Start the backend:
 ```bash
 npm start
 ```
-
-> **Screenshot:** Backend terminal showing `Backend running on port 5000` and `Table ready`
+![alt text](Screenshots/backend_running.png)
 
 ### Frontend Setup
 
@@ -97,7 +93,7 @@ cp .env.example .env
 
 Edit `.env`:
 ```env
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=http://localhost:5001
 ```
 
 3. Start the frontend:
@@ -105,7 +101,7 @@ REACT_APP_API_URL=http://localhost:5000
 npm start
 ```
 
-> **Screenshot:** Browser showing the To-Do app at `http://localhost:3000` with tasks added, edited, and deleted
+![alt text](Screenshots/forntend_running.png)
 
 ### API Endpoints
 
@@ -116,7 +112,7 @@ npm start
 | PUT | `/api/todos/:id` | Update a todo |
 | DELETE | `/api/todos/:id` | Delete a todo |
 
----
+
 
 ## Part A — Deploying a Pre-Built Docker Image to Docker Hub
 
@@ -145,9 +141,9 @@ docker buildx build --platform linux/amd64 -t dupchuuw/fe-todo:02230282 --push .
 1. Go to [render.com](https://render.com) → **New** → **PostgreSQL**
 2. Name: `todo-db`, Region: Singapore, Plan: Free
 3. Click **Create Database**
-4. Copy the **Internal Database URL** — you will need the individual credentials (host, user, password, database name)
+4. Copy the **Internal Database URL** 
 
-> **Screenshot:** Render PostgreSQL dashboard showing the database is active and credentials panel
+![alt text](Screenshots/render_db.png)
 
 #### Backend Service
 
@@ -168,7 +164,7 @@ docker buildx build --platform linux/amd64 -t dupchuuw/fe-todo:02230282 --push .
 
 5. Click **Create Web Service**
 
-> **Screenshot:** Render backend service showing `Live` status and the service URL (e.g., `https://be-todo.onrender.com`)
+![alt text](Screenshots/render_backend.png)
 
 #### Frontend Service
 
@@ -183,11 +179,10 @@ docker buildx build --platform linux/amd64 -t dupchuuw/fe-todo:02230282 --push .
 
 5. Click **Create Web Service**
 
-> **Screenshot:** Render frontend service showing `Live` status and URL (e.g., `https://fe-todo.onrender.com`)
+![alt text](Screenshots/render_frontend.png)
 
-> **Screenshot:** Live app in browser at the Render frontend URL, with tasks being created and deleted
 
----
+
 
 ## Part B — Automated Image Build and Deployment (CI/CD)
 
