@@ -182,7 +182,7 @@ docker buildx build --platform linux/amd64 -t dupchuuw/fe-todo:02230282 --push .
 ![alt text](Screenshots/render_frontend.png)
 
 
-
+![alt text](Screenshots/render_todo.png)
 
 ## Part B — Automated Image Build and Deployment (CI/CD)
 
@@ -195,11 +195,11 @@ git init
 git add .
 git commit -m "Initial commit: full-stack todo app"
 git branch -M main
-git remote add origin https://github.com/dupchuuw/dupchuuw_02230282_DSO101_A1.git
+git remote add origin https://github.com/Dupchuwangmo7/Dupchuwangmo7_02230282_DSO101_A1.git
 git push -u origin main
 ```
 
-> **Screenshot:** GitHub repository showing all files committed
+![alt text](Screenshots/github.png)
 
 ### Step B2 — Connect Render to GitHub via render.yaml (Blueprint)
 
@@ -220,12 +220,11 @@ services:
 ```
 
 1. Go to [render.com](https://render.com) → **New** → **Blueprint**
-2. Connect your GitHub account and select the repository `dupchuuw_02230282_DSO101_A1`
+2. Connect your GitHub account and select the repository `Dupchuwangmo7_02230282_DSO101_A1`
 3. Render detects `render.yaml` automatically
 4. Fill in secret environment variables (DB credentials) when prompted
 5. Click **Apply** — Render will create and deploy all services
 
-> **Screenshot:** Render Blueprint screen showing all three services detected from `render.yaml`
 
 > **Screenshot:** All three services (`be-todo`, `fe-todo`, `todo-db`) showing `Live` in Render dashboard
 
