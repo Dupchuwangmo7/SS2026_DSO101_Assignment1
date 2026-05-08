@@ -17,7 +17,7 @@ function App() {
     try {
       const res = await fetch(`${API_URL}/api/todos`);
       const data = await res.json();
-      setTodos(data);
+      setTodos(Array.isArray(data) ? data : []);
     } catch {
       setError('Failed to connect to backend.');
     } finally {
