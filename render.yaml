@@ -30,6 +30,8 @@ services:
     envVars:
       - key: REACT_APP_API_URL
         value: https://be-todo.onrender.com
+      - key: PORT
+        value: 80
 
 # NOTE: No database service block here — using Render's managed PostgreSQL.
 # Create the PostgreSQL database manually on Render dashboard first,
