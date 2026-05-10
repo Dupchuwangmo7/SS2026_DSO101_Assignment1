@@ -4,6 +4,7 @@ services:
     name: be-todo
     env: docker
     dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend          # FIX: build context must be ./backend so COPY package*.json finds the file
     plan: free
     envVars:
       - key: DB_HOST
@@ -26,13 +27,16 @@ services:
     name: fe-todo
     env: docker
     dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend         # FIX: build context must be ./frontend so COPY package*.json finds the file
     plan: free
     envVars:
-      - key: REACT_APP_API_URL
-        value: https://be-todo.onrender.com
       - key: PORT
         value: 80
 
 # NOTE: No database service block here — using Render's managed PostgreSQL.
 # Create the PostgreSQL database manually on Render dashboard first,
 # then copy the credentials into the sync:false fields above when applying the Blueprint.
+#
+# REACT_APP_API_URL is intentionally NOT set here — React env vars are baked in at BUILD time,
+# not runtime, so setting it here has no effect. The frontend uses relative /api/ URLs and
+# nginx (inside the frontend container) proxies them to the backend service.

@@ -1,0 +1,34 @@
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # On Linux, set this to your host's docker group GID:
+        #   getent group docker | cut -d: -f3
+        # On macOS / Windows (Docker Desktop), 999 works fine.
+        DOCKER_GID: ${DOCKER_GID:-999}
+
+    image: jenkins-with-docker:latest
+    container_name: jenkins
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"   # Jenkins web UI
+      - "50000:50000" # Jenkins agent connections (not used here, but harmless)
+
+    volumes:
+      # Persistent Jenkins home — config, jobs, build history, plugins.
+      # Survives `docker compose down` so you don't lose your setup.
+      - jenkins_home:/var/jenkins_home
+
+      # Mount the host's Docker socket. This is what lets the pipeline build
+      # and push Docker images using the host's Docker daemon.
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    environment:
+      # Skip the initial setup wizard's "browser language" detection nag.
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=true"
+
+volumes:
+  jenkins_home:
