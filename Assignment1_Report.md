@@ -1,5 +1,5 @@
 # DSO101 Assignment 1 — CI/CD To-Do App
-**Student:** Dupchu Wangchuk  
+**Student:** Dupchu Wangmo  
 **Student ID:** 02230282  
 **Module:** DSO101 — Continuous Integration and Continuous Deployment  
 
@@ -10,7 +10,7 @@ A full-stack To-Do List web application built with:
 - **Backend:** Node.js + Express.js (REST API)
 - **Database:** PostgreSQL
 
----
+
 
 ## Repository Structure
 
@@ -226,64 +226,22 @@ services:
 5. Click **Apply** — Render will create and deploy all services
 
 
-> **Screenshot:** All three services (`be-todo`, `fe-todo`, `todo-db`) showing `Live` in Render dashboard
+![alt text](Screenshots/blueprint_de.png)
+
 
 ### Step B3 — Verify Auto-Deploy on Git Push
+Go to the Render dashboard — you will see a new deployment automatically triggered
 
-1. Make a small change (e.g., update the app title in `frontend/src/App.js`):
-```bash
-# Edit a file, then:
-git add .
-git commit -m "Update: change app subtitle text"
-git push origin main
-```
+![alt text](Screenshots/blueprint_render.png)
 
-2. Go to the Render dashboard — you will see a new deployment automatically triggered
 
-> **Screenshot:** Render showing a new deployment triggered immediately after the git push
 
-> **Screenshot:** Render deploy log showing the Docker build and successful deploy
-
-> **Screenshot:** The updated change visible live on the deployed URL
-
----
-
-## Environment Variables Summary
-
-### Backend `.env`
-```env
-DB_HOST=your-db-host
-DB_USER=your-db-user
-DB_PASSWORD=your-db-password
-DB_NAME=tododb
-DB_PORT=5432
-DB_SSL=true
-PORT=5000
-```
-
-### Frontend `.env`
-```env
-REACT_APP_API_URL=https://be-todo.onrender.com
-```
-
-> ⚠️ `.env` files are **never committed to Git** — they are listed in `.gitignore`. Only `.env.example` and `.env.production` (without secrets) are committed.
-
----
 
 ## Live URLs
 
 | Service | URL |
 |---------|-----|
-| Frontend | `https://fe-todo.onrender.com` |
-| Backend API | `https://be-todo.onrender.com` |
+| Frontend | `https://fe-todo-02230282.onrender.com` |
+| Blueprint | `https://fe-todo-kdkq.onrender.com` |
 
----
 
-## References
-
-- [Docker Documentation](https://docs.docker.com/)
-- [Render Documentation](https://render.com/docs)
-- [Render Blueprint Spec](https://render.com/docs/blueprint-spec)
-- [Render Deploy from Image](https://render.com/docs/deploying-an-image)
-- [Render Environment Variables](https://render.com/docs/configure-environment-variables)
-- [Publishing Docker Images via GitHub](https://docs.docker.com/build/ci/github-actions/)

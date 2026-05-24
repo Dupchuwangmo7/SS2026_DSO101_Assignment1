@@ -1,5 +1,5 @@
 # DSO101 Assignment 2 — Jenkins CI/CD Pipeline
-**Student:** Dupchu Wangchuk  
+**Student:** Dupchu Wangmo  
 **Student ID:** 02230282  
 **Module:** DSO101 — Continuous Integration and Continuous Deployment  
 
@@ -16,7 +16,7 @@ CI/CD pipeline. Every push to GitHub triggers an automated pipeline that:
 
 **Tools used:** Jenkins, GitHub, Node.js 20 LTS, Jest, jest-junit, Docker.
 
----
+
 
 ## Repository Structure
 
@@ -35,16 +35,14 @@ todo-app/
 │   ├── validation.js
 │   ├── Dockerfile
 │   └── package.json
-├── jenkins/             ← NEW (Jenkins-in-Docker setup)
+├── jenkins/             
 │   ├── Dockerfile
 │   ├── docker-compose.yml
 │   └── README.md
 ├── render.yaml
-├── Jenkinsfile          ← NEW
+├── Jenkinsfile          
 └── README.md
 ```
-
----
 
 ## Task 1 — Jenkins Setup for Node.js
 
@@ -56,16 +54,16 @@ the `jenkins/` folder of the repo.
 ### Step 1.1 — Custom Jenkins image
 
 The official `jenkins/jenkins:lts` image does not include the Docker CLI, but the
-pipeline's Deploy stage calls `docker.build` and `docker.withRegistry` — so I built
+pipeline's Deploy stage calls `docker.build` and `docker.withRegistry` - so I built
 a small custom image that adds the Docker CLI on top of the official base.
 
-**`jenkins/Dockerfile`** (excerpt):
+**`jenkins/Dockerfile`** :
 
 ```dockerfile
 FROM jenkins/jenkins:lts-jdk17
 USER root
 
-# Install Docker CLI (no daemon — the daemon comes from the host via socket mount)
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates curl gnupg lsb-release && \
     install -m 0755 -d /etc/apt/keyrings && \
@@ -76,7 +74,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         > /etc/apt/sources.list.d/docker.list && \
     apt-get update && apt-get install -y --no-install-recommends docker-ce-cli
 
-# Add jenkins user to docker group so it can use the mounted socket
+#
 ARG DOCKER_GID=999
 RUN groupmod -g ${DOCKER_GID} docker && usermod -aG docker jenkins
 USER jenkins
@@ -103,8 +101,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - jenkins_home:/var/jenkins_home              # persistent config
-      - /var/run/docker.sock:/var/run/docker.sock   # access to host Docker
+      - jenkins_home:/var/jenkins_home              
+      - /var/run/docker.sock:/var/run/docker.sock   
 volumes:
   jenkins_home:
 ```
@@ -120,17 +118,23 @@ From the `jenkins/` folder:
 docker compose up -d --build
 ```
 
+![alt text](Screenshots_A2/docker_compose_up.png)
+
 Once the container was healthy, I retrieved the initial admin password:
 
 ```bash
 docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
+![alt text](Screenshots_A2/password.png)
+
+Password: ff42891bd3b44e6aa818aff855cf2259
 
 Then opened `http://localhost:8080`, pasted the password, picked **Install
 suggested plugins**, and created an admin user.
 
-> **Screenshot:** Jenkins container running (`docker ps`) and the dashboard loaded
-> at localhost:8080.
+![alt text](Screenshots_A2/jenkins_start.png)
+
+![alt text](Screenshots_A2/jenkins_setups.png)
 
 ### Step 1.4 — Install Required Plugins
 
@@ -144,7 +148,6 @@ installed the plugins not included in "suggested":
 (Pipeline, GitHub Integration, JUnit, Git, and Credentials are all included by
 the "suggested plugins" option during setup.)
 
-> **Screenshot:** Installed plugins list.
 
 ### Step 1.5 — Configure Node.js in Jenkins
 
@@ -156,9 +159,6 @@ Went to **Manage Jenkins → Tools → NodeJS installations** and added:
 | Version | `NodeJS 20.x LTS` |
 | Install automatically | ✓ |
 
-> **Screenshot:** NodeJS tool configuration page.
-
----
 
 ## Task 2 — GitHub Repository Setup
 
@@ -193,7 +193,6 @@ Access Token**, then added another credential in Jenkins:
 | Password | (Docker Hub access token) |
 | ID | `docker-hub-creds` |
 
----
 
 ## Task 3 — Jenkinsfile
 
@@ -301,14 +300,13 @@ pipeline {
 }
 ```
 
+![alt text](Screenshots_A2/backend_test.png)
+
 A small pure-function module `backend/validation.js` provides input-validation helpers
 (`isValidTitle`, `normalizeTitle`, `parseId`). Eleven Jest test cases live in
 `backend/__tests__/validation.test.js` and run without needing a database connection — so
 the pipeline is fast and deterministic.
 
-> **Screenshot:** Jest output showing 11 tests passing locally.
-
----
 
 ## Task 4 — Run the Pipeline
 
@@ -327,137 +325,28 @@ the pipeline is fast and deterministic.
 
 Saved and clicked **Build Now**.
 
-> **Screenshot:** Pipeline job configuration page.
 
 ### Step 4.2 — Successful Pipeline Run
 
-> **Screenshot:** Stage View in Jenkins showing all five stages green —
-> Checkout → Install Dependencies → Build Frontend → Test → Docker Build & Push.
+For Backend
 
-> **Screenshot:** Console output showing `npm install`, `npm run build`, `npm test`, and
-> the Docker push completing.
+![alt text](Screenshots_A2/backend_docker_push.png)
+
+For frontend
+
+![alt text](Screenshots_A2/frontend_docker_push.png)
 
 ### Step 4.3 — Test Results in Jenkins
 
-> **Screenshot:** "Test Result" page in Jenkins showing 11 passing test cases from
-> `validation.test.js`.
+![alt text](Screenshots_A2/backend_test.png)
 
 ### Step 4.4 — Docker Hub
 
-> **Screenshot:** Docker Hub showing two images:
-> - `dupchuuw/be-todo:02230282`
-> - `dupchuuw/fe-todo:02230282`
+![alt text](Screenshots_A2/dockerhub.png)
 
-Docker Hub links:
-- https://hub.docker.com/r/dupchuuw/be-todo
-- https://hub.docker.com/r/dupchuuw/fe-todo
+# Conclusion
 
----
+In this assignment, I successfully implemented a full CI/CD pipeline for my full-stack To-Do List application using Jenkins, GitHub, Docker, automated testing, and local container deployment. The pipeline checks out the source code from the assignment-2 branch, installs frontend and backend dependencies, builds the React application, runs automated frontend and backend tests, publishes JUnit test results, builds Docker images, pushes them to Docker Hub, and deploys both services as running containers.
 
-## Render Blueprint Fix (carried over from Assignment 1)
+Through this work, I demonstrated practical understanding of Continuous Integration and Continuous Deployment concepts rather than only describing them theoretically. I also learned how to diagnose and solve real pipeline issues such as Jenkins configuration problems, Docker permission errors, interactive test behavior, and test dependency isolation. Overall, this assignment strengthened my understanding of how modern software delivery pipelines are built and why automation is essential for reliability, repeatability, and professional software engineering practice.
 
-While preparing for this assignment I discovered the `render.yaml` Blueprint deployment
-from Assignment 1 was failing with a Docker build error. Two issues were fixed:
-
-### Fix 1 — `dockerContext` in `render.yaml`
-
-By default, Render uses the **repository root** as the Docker build context, regardless of
-where the Dockerfile lives. With my repo layout, that meant when Render ran
-`docker build -f ./backend/Dockerfile .` from the repo root, the very first instruction
-`COPY package*.json ./` failed — there is no `package.json` at the repo root, only at
-`backend/package.json`.
-
-The fix is to set `dockerContext` explicitly so the COPY instructions resolve correctly:
-
-```yaml
-- type: web
-  name: be-todo
-  env: docker
-  dockerfilePath: ./backend/Dockerfile
-  dockerContext: ./backend          # was missing — caused the build failure
-  ...
-
-- type: web
-  name: fe-todo
-  env: docker
-  dockerfilePath: ./frontend/Dockerfile
-  dockerContext: ./frontend         # was missing — caused the build failure
-  ...
-```
-
-### Fix 2 — `frontend/.env.production`
-
-The original file contained `REACT_APP_API_URL=http://localhost:5001`. Create React App
-inlines this string into the JavaScript bundle at **build time**, so even if `render.yaml`
-sets a different value at runtime, the deployed bundle still tries to fetch from
-`localhost:5001` — which is the user's own machine, not the backend service. Set it to an
-empty value so the app uses relative URLs (`/api/todos`), which are then proxied to the
-backend by `nginx.conf` inside the frontend container:
-
-```env
-REACT_APP_API_URL=
-```
-
-After both fixes, the Blueprint deploys cleanly.
-
----
-
-## Challenges Faced
-
-1. **Running Jenkins in Docker, not natively.** Choosing Jenkins-in-Docker meant
-   the official `jenkins/jenkins:lts` image had no `docker` command available, so
-   the pipeline's Deploy stage failed with `docker: command not found`. Solved by
-   building a custom image (`jenkins/Dockerfile`) that installs `docker-ce-cli` on
-   top of the official base, and bind-mounting the host's Docker socket
-   (`/var/run/docker.sock`) into the container so the CLI inside Jenkins talks to
-   the daemon outside. This is the Docker-out-of-Docker pattern — simpler than
-   running a nested daemon. The jenkins user also had to be added to the docker
-   group with the matching GID from the host, otherwise socket access was denied.
-
-2. **Monorepo vs. single-repo Jenkinsfile.** The example pipeline in the assignment PDF
-   assumes a single Node.js app at the repo root. My project is a monorepo with separate
-   `frontend/` and `backend/` folders, so every `npm install`, `npm run build`, and
-   `npm test` had to be wrapped in `dir('...')` blocks.
-
-3. **Tests that don't need a database.** My backend uses PostgreSQL, so naively running
-   API tests would have required spinning up a Postgres container in the pipeline. I
-   refactored the input-validation logic into a separate `validation.js` module and
-   tested that as pure functions instead — fast, deterministic, no infrastructure.
-
-4. **JUnit path.** `jest-junit` defaults to writing `junit.xml` in the current working
-   directory. Because `npm test` runs inside `dir('backend')`, the file ends up at
-   `backend/junit.xml` from Jenkins's perspective — which is what the `junit
-   'backend/junit.xml'` step in the post-block expects.
-
-5. **Render Blueprint build failure.** Initially I thought the failure was a Dockerfile
-   bug, but the real cause was Render's default build-context behaviour. Adding
-   `dockerContext` to `render.yaml` was a one-line fix once the cause was identified.
-
-6. **Docker Hub authentication in Jenkins.** Storing the password directly in the
-   Jenkinsfile is insecure. Using `docker.withRegistry(..., 'docker-hub-creds')` keeps the
-   credential out of source control while still letting the pipeline push images.
-
----
-
-## Deliverables Checklist
-
-- [x] Jenkinsfile committed at the repo root
-- [x] `package.json` updated with `test` script and `jest`, `jest-junit` dev dependencies
-- [x] Backend tests in `backend/__tests__/validation.test.js`
-- [x] Successful pipeline screenshot — Stage View
-- [x] Test results screenshot — JUnit page in Jenkins
-- [x] Docker Hub images pushed: `dupchuuw/be-todo:02230282`, `dupchuuw/fe-todo:02230282`
-- [x] GitHub repo: https://github.com/Dupchuwangmo7/Dupchuwangmo7_02230282_DSO101_A1
-- [x] This report
-
----
-
-## References
-
-- [Jenkins Pipeline syntax](https://www.jenkins.io/doc/book/pipeline/syntax/)
-- [Jenkins NodeJS plugin](https://plugins.jenkins.io/nodejs/)
-- [Jenkins Docker Pipeline plugin](https://plugins.jenkins.io/docker-workflow/)
-- [Jest documentation](https://jestjs.io/docs/getting-started)
-- [jest-junit on npm](https://www.npmjs.com/package/jest-junit)
-- [Render Blueprint spec](https://render.com/docs/blueprint-spec)
-- [Docker Hub access tokens](https://docs.docker.com/security/for-developers/access-tokens/)
