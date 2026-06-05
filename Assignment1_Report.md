@@ -76,7 +76,7 @@ PORT=5001
 ```bash
 npm start
 ```
-![alt text](Screenshots/backend_running.png)
+![alt text](Screenshots_A1/backend_running.png)
 
 ### Frontend Setup
 
@@ -101,7 +101,7 @@ REACT_APP_API_URL=http://localhost:5001
 npm start
 ```
 
-![alt text](Screenshots/forntend_running.png)
+![alt text](Screenshots_A1/forntend_running.png)
 
 ### API Endpoints
 
@@ -124,15 +124,15 @@ cd backend
 docker buildx build --platform linux/amd64 -t dupchuuw/be-todo:02230282 --push .
 
 ```
-
-![alt text](Screenshots/backend_docker_push.png)
+![alt text](Screenshots_A1/backend_docker_push.png)
 
 **Frontend image:**
 ```bash
 cd frontend
 docker buildx build --platform linux/amd64 -t dupchuuw/fe-todo:02230282 --push .
 ```
-![alt text](Screenshots/forntend_docker_push.png)
+
+![alt text](Screenshots_A1/forntend_docker_push.png)
 
 ### Step A2 — Deploy on Render.com
 
@@ -143,7 +143,7 @@ docker buildx build --platform linux/amd64 -t dupchuuw/fe-todo:02230282 --push .
 3. Click **Create Database**
 4. Copy the **Internal Database URL** 
 
-![alt text](Screenshots/render_db.png)
+![alt text](Screenshots_A1/render_db.png)
 
 #### Backend Service
 
@@ -164,7 +164,7 @@ docker buildx build --platform linux/amd64 -t dupchuuw/fe-todo:02230282 --push .
 
 5. Click **Create Web Service**
 
-![alt text](Screenshots/render_backend.png)
+![alt text](Screenshots_A1/render_backend.png)
 
 #### Frontend Service
 
@@ -179,10 +179,10 @@ docker buildx build --platform linux/amd64 -t dupchuuw/fe-todo:02230282 --push .
 
 5. Click **Create Web Service**
 
-![alt text](Screenshots/render_frontend.png)
+![alt text](Screenshots_A1/render_frontend.png)
 
 
-![alt text](Screenshots/render_todo.png)
+![alt text](Screenshots_A1/render_todo.png)
 
 ## Part B — Automated Image Build and Deployment (CI/CD)
 
@@ -198,8 +198,8 @@ git branch -M main
 git remote add origin https://github.com/Dupchuwangmo7/Dupchuwangmo7_02230282_DSO101_A1.git
 git push -u origin main
 ```
+![alt text](Screenshots_A1/github.png)
 
-![alt text](Screenshots/github.png)
 
 ### Step B2 — Connect Render to GitHub via render.yaml (Blueprint)
 
@@ -226,13 +226,12 @@ services:
 5. Click **Apply** — Render will create and deploy all services
 
 
-![alt text](Screenshots/blueprint_de.png)
-
+![alt text](Screenshots_A1/blueprint_de.png)
 
 ### Step B3 — Verify Auto-Deploy on Git Push
 Go to the Render dashboard — you will see a new deployment automatically triggered
 
-![alt text](Screenshots/blueprint_render.png)
+![alt text](Screenshots_A1/blueprint_render.png)
 
 
 
